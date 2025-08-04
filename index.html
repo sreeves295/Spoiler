@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Request Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    input, textarea {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #status {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h2>Submit a Request</h2>
+  <form id="requestForm">
+    <input type="text" id="name" placeholder="Your Name" required />
+    <textarea id="message" placeholder="Your Request" rows="5" required></textarea>
+    <button type="submit">Send to Discord</button>
+  </form>
+  <p id="status"></p>
+
+  <script>
+    const webhookURL = "https://discord.com/api/webhooks/1401984600049455104/9On7UfhzctxHP1J5ZW-eckNGNtQRDHWhv8qHg6LdKW5kphg2xfy9e4M0zyb8Z-yBpTIJ";
+
+    document.getElementById("requestForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const message = document.getElementById("message").value.trim();
+
+      if (!name || !message) {
+        document.getElementById("status").textContent = "⚠️ Please fill out both fields.";
+        return;
+      }
+
+      const payload = {
+        content: `New Request:\nName: ${name}\nMessage: ${message}`
+      };
+
+      try {
+        const response = await fetch(webhookURL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+          document.getElementById("status").textContent = "✅ Request sent successfully!";
+          document.getElementById("requestForm").reset();
+        } else {
+          document.getElementById("status").textContent = "❌ Failed to send request.";
+        }
+      } catch (error) {
+        document.getElementById("status").textContent = "⚠️ Error sending request.";
+        console.error(error);
+      }
+    });
+  </script>
+</body>
+</html>
